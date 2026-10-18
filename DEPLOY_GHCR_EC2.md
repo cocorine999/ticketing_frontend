@@ -91,3 +91,17 @@ docker compose up -d
 - `postgres`, `worker`, `scheduler` sont internes (non exposés).
 - Le volume partagé `storage_app` est monté sur `web` **et** `worker` (QR codes, pièces jointes).
 - Ne pas lancer en parallèle avec le mode natif sur le même hôte (conflit ports 80/443). Choisir **un** mode.
+- Images **alpine** (`postgres:16-alpine`, `caddy:2-alpine`) pour limiter l'empreinte disque.
+- Auth serveur : **deploy key** (git, lecture seule) + `docker login ghcr.io` (persistant dans `~/.docker/config.json`).
+
+## Pré-requis / limites (vérifiés en prod)
+- **RAM** : `t3.micro` (911 Mo) suffit tout juste → ajouter **1–2 Go de swap** et préférer `t3.small` (2 Go) pour la stabilité.
+- **Disque** : l'image backend fait **~1,5 Go**. Sur un volume de 8 Go il ne reste que ~1,5 Go libres → **agrandir l'EBS à 20 Go** (Console → Volume → Modify, puis `sudo growpart /dev/nvme0n1 1 && sudo resize2fs /dev/nvme0n1p1`).
+- **Security Group** : ouvrir **80** et **443** à `0.0.0.0/0` (sinon Caddy ne peut pas obtenir le certificat Let's Encrypt).
+- **DNS** : `A api.ticketing.corinebocoga.com → <Elastic IP>`.
+
+## Vérification
+```bash
+curl -sS https://api.ticketing.corinebocoga.com/api/health
+# {"status":"healthy","database":"connected",...}
+```
