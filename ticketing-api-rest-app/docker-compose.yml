@@ -1,6 +1,6 @@
 services:
   postgres:
-    image: postgres:16
+    image: postgres:16-alpine
     restart: always
     environment:
       POSTGRES_DB: ticketing_db
@@ -75,7 +75,7 @@ services:
         condition: service_healthy
 
   caddy:
-    image: caddy:2
+    image: caddy:2-alpine
     restart: always
     ports:
       - "80:80"
