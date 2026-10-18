@@ -69,11 +69,14 @@ jobs:
           # APP_DIR = racine du monorepo clonée sur l'EC2 (repo cocorine999/ticketing_backend)
           ssh -o BatchMode=yes -o StrictHostKeyChecking=accept-new -i ~/.ssh/deploy_key "${EC2_USER}@${EC2_HOST}" "
             set -e
-            cd /home/ubuntu/app/ticketing_backend/ticketing-api-rest-app
+            cd /home/ubuntu/app/ticketing_backend
+            git pull --ff-only
+            cd ticketing-api-rest-app
             export IMAGE_TAG='${IMAGE_TAG}'
             export IMAGE_NAME='${IMAGE_NAME}'
             docker compose pull web worker broadcasting scheduler
             docker compose up -d --remove-orphans
+            docker compose exec -T web php artisan migrate --force
             docker compose exec -T web php artisan config:cache
             docker compose exec -T web php artisan route:cache
             docker compose exec -T web php artisan view:cache
