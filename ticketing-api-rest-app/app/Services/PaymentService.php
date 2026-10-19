@@ -217,13 +217,17 @@ class PaymentService implements PaymentServiceContract
         }
     }
 
-    public function verifyWebhookSignature(string $payload, string $signature): bool
+    public function verifyWebhookSignature(string $payload, ?string $signature): bool
     {
         try {
             $endpointSecret = config('services.fedapay.webhook_secret');
 
             if (!$endpointSecret) {
                 Log::warning('FedaPay webhook secret not configured');
+                return false;
+            }
+
+            if (!$signature) {
                 return false;
             }
 

@@ -20,7 +20,7 @@ interface PaymentServiceContract
     //public function createTransactionForTicket(string $ticketId, array $customerData, int $amount, string $description): array;
     public function createTransactionForTicket(array $ticketIds, array $customerData, int $amount, string $description): array;
 
-    public function verifyWebhookSignature(string $payload, string $signature): bool;
+    public function verifyWebhookSignature(string $payload, ?string $signature): bool;
 
     public function handleWebhookEvent(array $eventData): void;
 }
