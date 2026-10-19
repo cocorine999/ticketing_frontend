@@ -16,7 +16,8 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('roles')->truncate('RESTART IDENTITY CASCADE');
+        DB::table('role_permissions')->delete();
+        DB::table('roles')->delete();
 
         $roles = [
             ['id' => Str::uuid(), 'name' => 'Super Admin', 'slug' => 'super-admin', 'guard_name' => 'web'],

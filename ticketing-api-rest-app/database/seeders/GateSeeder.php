@@ -21,21 +21,21 @@ class GateSeeder extends Seeder
         Gate::create([
             'id' => Str::uuid(),
             'name' => 'Main Entrance',
-            'gate_type' => 'entrance',
+            'type' => 'entrance',
             'status' => 'active',
         ]);
 
         Gate::create([
             'id' => Str::uuid(),
             'name' => 'VIP Entrance',
-            'gate_type' => 'vip',
+            'type' => 'vip',
             'status' => 'active',
         ]);
 
         Gate::create([
             'id' => Str::uuid(),
             'name' => 'Main Exit',
-            'gate_type' => 'exit',
+            'type' => 'exit',
             'status' => 'active',
         ]);
     }

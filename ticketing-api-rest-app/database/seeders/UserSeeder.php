@@ -18,7 +18,7 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('users')->truncate('RESTART IDENTITY CASCADE');
+        DB::table('users')->delete();
 
         // Get role IDs
         $superAdminRole = Role::where('slug', 'super-admin')->first();
