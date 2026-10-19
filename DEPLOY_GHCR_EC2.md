@@ -105,3 +105,38 @@ docker compose up -d
 curl -sS https://api.ticketing.corinebocoga.com/api/health
 # {"status":"healthy","database":"connected",...}
 ```
+
+## Front (Vercel)
+
+Le front vit dans le **même monorepo** : la racine contient `ticketing-app/` (front) **et** `ticketing-api-rest-app/` (API).
+
+- Repo : `https://github.com/cocorine999/ticketing_frontend` (branche `main`)
+- Remote local : `origin-github-front`
+- Push : `git push origin-github-front HEAD:main` (fast-forward)
+- **Vercel → Settings → General → Root Directory = `ticketing-app`** (obligatoire, sinon Vercel ne trouve pas `package.json`)
+
+### Variables d'environnement (Vercel)
+`Settings → Environment Variables`, à définir sur **Production, Preview et Development**, puis **Redeploy** (un build existant ne re lit pas les variables).
+
+| Clé | Valeur |
+|---|---|
+| `VITE_API_URL` | `https://api.ticketing.corinebocoga.com/api` |
+| `VITE_REVERB_APP_KEY` | valeur de `REVERB_APP_KEY` du `.env` backend |
+| `VITE_REVERB_HOST` | `api.ticketing.corinebocoga.com` |
+| `VITE_REVERB_PORT` | `443` |
+| `VITE_REVERB_SCHEME` | `https` |
+| `VITE_ENABLE_MULTI_ORG` | `true` |
+| `VITE_ENABLE_CASH_PAYMENTS` | `true` |
+| `VITE_BETA_FEATURES` | `false` |
+
+Optionnels (passerelles de paiement, à renseigner si utilisées) : `VITE_PAYDUNYA_API_KEY`, `VITE_CINETPAY_API_KEY`, `VITE_CINETPAY_SITE_ID`, `VITE_MTN_MOMO_API_KEY`.
+
+> ⚠️ Les variables du dashboard Vercel **priment** sur le fichier committé `ticketing-app/.env.production`, qui pointe encore vers l'ancien backend Railway (`ticketing-api-free-production-77fd.up.railway.app`) et un `VITE_REVERB_HOST` Railway. Mettre à jour ou supprimer ce fichier pour éviter toute confusion.
+
+### Webhook de paiement (côté API)
+FedaPay → `https://api.ticketing.corinebocoga.com/api/webhooks/fedapay`
+
+### Vérification front
+Après redeploy, dans la console du navigateur :
+- les appels API partent vers `https://api.ticketing.corinebocoga.com/...` (plus Railway) ;
+- le WebSocket Reverb se connecte sur `wss://api.ticketing.corinebocoga.com/app/<REVERB_APP_KEY>`.
